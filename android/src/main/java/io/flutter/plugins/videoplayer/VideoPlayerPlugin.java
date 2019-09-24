@@ -34,6 +34,8 @@ import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.upstream.cache.CacheDataSourceFactory;
+import com.google.android.exoplayer2.upstream.cache.SimpleCache;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -88,12 +90,14 @@ public class VideoPlayerPlugin implements MethodCallHandler {
       DataSource.Factory dataSourceFactory;
       if (isHTTP(uri)) {
         dataSourceFactory =
-            new DefaultHttpDataSourceFactory(
-                "ExoPlayer",
-                null,
-                DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-                DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-                true);
+                new DefaultHttpDataSourceFactory(
+                        "ExoPlayer",
+                        null,
+                        DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
+                        DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
+                        true);
+        SimpleCache simpleCache = VideoCache.getInstance(context);
+        dataSourceFactory = new CacheDataSourceFactory(simpleCache, dataSourceFactory);
       } else {
         dataSourceFactory = new DefaultDataSourceFactory(context, "ExoPlayer");
       }
